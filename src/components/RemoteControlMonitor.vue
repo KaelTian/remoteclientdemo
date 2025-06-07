@@ -1,5 +1,9 @@
 <template>
-
+    <div class="control-panel">
+        <button @click="sendShortcut('win+r')">Win+R</button>
+        <button @click="sendShortcut('alt+tab')">Alt+Tab</button>
+        <button @click="sendShortcut('ctrl+alt+del')">Ctrl+Alt+Del</button>
+    </div>
     <div id="remote" ref="remoteContainer" @mousemove="handleMouseMove" @mousedown="handleMouseDown"
         @mouseup="handleMouseUp" @wheel="handleMouseWheel" @contextmenu="handleContextMenu">
         <img :src="remoteImageSrc" alt="Remote Screenshot" />
@@ -43,6 +47,34 @@ export default {
         remoteControlService.stop();
     },
     methods: {
+        sendShortcut(shortcut) {
+            let flags = 0;
+            let keyCode = 0;
+
+            switch (shortcut) {
+                case 'win+r':
+                    let winCode = 91;
+                    let rCode = 82;
+                    let keyCombination = [
+                        { k: winCode, f: 0 }, // 按下 Win 键
+                        { k: rCode, f: 0 }, // 按下 R 键
+                        { k: rCode, f: 2 }, // 释放 R 键
+                        { k: winCode, f: 2 } // 释放 Win 键
+                    ];
+                    for (let i = 0; i < keyCombination.length; i++) {
+                        remoteControlService.sendCommand(keyCombination[i], 'Keyboard');
+                    }
+                    break;
+                case 'alt+tab':
+                    flags = 0x4000; // Alt
+                    keyCode = 9; // Tab key
+                    break;
+                case 'ctrl+alt+del':
+                    flags = 0x1000 | 0x4000; // Ctrl + Alt
+                    keyCode = 46; // Del key
+                    break;
+            }
+        },
         /**
         * 获取鼠标事件的标志位（兼容标准按钮+侧键+组合键，与后端MouseEventFlags完全兼容）
         * @param {MouseEvent} event 鼠标事件对象
@@ -164,7 +196,6 @@ export default {
             console.log('键盘按下事件触发');
             remoteControlService.sendCommand({
                 k: event.keyCode,
-
                 f: 0
             }, 'Keyboard');
         },
@@ -178,9 +209,10 @@ export default {
                 f: 2
             }, 'Keyboard');
         },
-        
+
         // 右键菜单事件
         handleContextMenu(event) {
+            // 阻止默认右键菜单显示
             event.preventDefault();
             console.log('右键菜单事件触发');
             // const flags = this.getMouseEventFlag(event, 'mousedown');
@@ -195,14 +227,48 @@ export default {
 </script>
 
 <style scoped>
+.control-panel {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.control-panel button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #4a6cf7;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-panel button:hover {
+    background: #3a5ce7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
+}
+
+.control-panel button:active {
+    transform: translateY(0);
+}
+
 #remote {
     position: relative;
     margin: 0 auto;
     background-color: #f0f0f0;
     /* 加载时的背景色 */
-    border: 2px solid red;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     display: inline-block;
     line-height: 0;
+    transition: all 0.3s ease;
 }
 
 #remote img {
