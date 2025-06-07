@@ -1,11 +1,10 @@
 <template>
-    <div>
-        <div id="remote" ref="remoteContainer" @mousemove="handleMouseMove" @mousedown="handleMouseDown"
-            @mouseup="handleMouseUp" @dblclick="handleDoubleClick" @contextmenu.prevent="handleContextMenu"
-            @wheel="handleMouseWheel">
-            <img :src="remoteImageSrc" alt="Remote Screenshot" />
-        </div>
+
+    <div id="remote" ref="remoteContainer" @mousemove="handleMouseMove" @mousedown="handleMouseDown"
+        @mouseup="handleMouseUp" @wheel="handleMouseWheel" @contextmenu="handleContextMenu">
+        <img :src="remoteImageSrc" alt="Remote Screenshot" />
     </div>
+
 </template>
 
 <script>
@@ -16,9 +15,7 @@ export default {
     data() {
         return {
             remoteImageSrc: '',
-            isMouseDown: false,
-            lastMousePosition: { x: 0, y: 0 },
-            mouseButton: null
+            lastMousePosition: { x: 0, y: 0 }
         };
     },
     mounted() {
@@ -47,48 +44,62 @@ export default {
     },
     methods: {
         /**
- * 获取鼠标事件的标志位（兼容标准按钮+侧键+组合键）
- * @param {MouseEvent} event 鼠标事件对象
- * @param {string} eventType 事件类型（'mousedown'/'mouseup'/'mousemove'/'wheel'）
- * @returns {number} 组合后的标志位（uint）
- */
+        * 获取鼠标事件的标志位（兼容标准按钮+侧键+组合键，与后端MouseEventFlags完全兼容）
+        * @param {MouseEvent} event 鼠标事件对象
+        * @param {string} eventType 事件类型（'mousedown'/'mouseup'/'mousemove'/'wheel'/'dblclick'）
+        * @returns {number} 组合后的标志位（uint），与后端MouseEventFlags定义一致
+        */
         getMouseEventFlag(event, eventType) {
             let flags = 0;
 
-            // 1. 处理鼠标按钮事件（左/中/右键 + 侧键X1/X2）
+            // 1. 处理鼠标按钮事件（左/中/右键 + 侧键X1/X2），严格遵循后端位定义
             switch (eventType) {
                 case 'mousedown':
+                    switch (event.button) {
+                        case 0: // 左键按下
+                            flags |= 0x0002; // MOUSEEVENTF_LEFTDOWN
+                            break;
+                        case 1: // 中键按下
+                            flags |= 0x0020; // MOUSEEVENTF_MIDDLEDOWN
+                            break;
+                        case 2: // 右键按下
+                            flags |= 0x0008; // MOUSEEVENTF_RIGHTDOWN
+                            break;
+                        case 3: // 侧后退键 (X1) 按下
+                        case 4: // 侧前进键 (X2) 按下
+                            flags |= 0x0080; // MOUSEEVENTF_XDOWN
+                            break;
+                    }
+                    break;
                 case 'mouseup':
                     switch (event.button) {
-                        case 0: // 左键
-                            flags |= (eventType === 'mousedown' ? 0x0002 /* LEFTDOWN */ : 0x0004 /* LEFTUP */);
+                        case 0: // 左键释放
+                            flags |= 0x0004; // MOUSEEVENTF_LEFTUP
                             break;
-                        case 1: // 中键
-                            flags |= (eventType === 'mousedown' ? 0x0020 /* MIDDLEDOWN */ : 0x0040 /* MIDDLEUP */);
+                        case 1: // 中键释放
+                            flags |= 0x0040; // MOUSEEVENTF_MIDDLEUP
                             break;
-                        case 2: // 右键
-                            flags |= (eventType === 'mousedown' ? 0x0008 /* RIGHTDOWN */ : 0x0010 /* RIGHTUP */);
+                        case 2: // 右键释放
+                            flags |= 0x0010; // MOUSEEVENTF_RIGHTUP
                             break;
-                        case 3: // 侧后退键 (X1)
-                        case 4: // 侧前进键 (X2)
-                            flags |= (eventType === 'mousedown' ? 0x0080 /* XDOWN */ : 0x0100 /* XUP */);
+                        case 3: // 侧后退键 (X1) 释放
+                        case 4: // 侧前进键 (X2) 释放
+                            flags |= 0x0100; // MOUSEEVENTF_XUP
                             break;
                     }
                     break;
                 case 'mousemove':
-                    flags |= 0x0001; // MOVE
+                    flags |= 0x0001; // MOUSEEVENTF_MOVE
                     break;
                 case 'wheel':
-                    flags |= 0x0800; // WHEEL
-                case 'dblclick':
-                    flags |= 0x0410; // Double Click
+                    flags |= 0x0800; // MOUSEEVENTF_WHEEL
                     break;
             }
-
-            // 2. 处理组合键状态（Ctrl/Shift/Alt）
-            if (event.ctrlKey) { flags |= 0x0008; }  // Ctrl 键状态（借用 RIGHTDOWN 的位）
-            else if (event.shiftKey) { flags |= 0x0004; }  // Shift 键状态（借用 LEFTUP 的位）
-            else if (event.altKey) { flags |= 0x0002; } // Alt 键状态（借用 LEFTDOWN 的位）
+            // // 2. 处理组合键状态（Ctrl/Shift/Alt），使用独立的位定义（注意：后端未定义组合键位，需协商新增定义或使用保留位）
+            // // 注意：后端MouseEventFlags未包含组合键定义，以下为临时解决方案，建议前后端协商统一标准
+            // if (event.ctrlKey) { flags |= 0x1000; }  // 建议使用保留位0x1000表示Ctrl键
+            // if (event.shiftKey) { flags |= 0x2000; } // 建议使用保留位0x2000表示Shift键
+            // if (event.altKey) { flags |= 0x4000; }   // 建议使用保留位0x4000表示Alt键
 
             return flags;
         },
@@ -102,34 +113,26 @@ export default {
                 y: (event.clientY - rect.top) / height
             };
         },
-
         // 鼠标移动事件
         handleMouseMove(event) {
-            //console.log('鼠标移动事件触发');
+            event.preventDefault();
             const flags = this.getMouseEventFlag(event, 'mousemove');
+            // 获取位置百分比
             const pos = this.getRelativePosition(event);
-            //console.log('鼠标移动位置:', pos);
             this.lastMousePosition = pos;
-
             remoteControlService.sendCommand({
-                cmd: flags,
+                k: flags,
                 x: pos.x,
                 y: pos.y
             });
         },
-
         // 鼠标按下事件
         handleMouseDown(event) {
+            event.preventDefault();
             console.log('鼠标按下事件触发');
             const flags = this.getMouseEventFlag(event, 'mousedown');
-            const pos = this.getRelativePosition(event);
-            console.log('鼠标按下位置:', pos);
-
             remoteControlService.sendCommand({
-                cmd: flags,
-                // x: Math.round(pos.x),
-                // y: Math.round(pos.y),
-                button: event.button // 可选：额外传递 button 值区分 X1/X2
+                k: flags
             });
 
             // 阻止侧键的默认行为（如浏览器后退/前进）
@@ -137,95 +140,55 @@ export default {
                 event.preventDefault();
             }
         },
-
         // 鼠标释放事件
         handleMouseUp(event) {
+            event.preventDefault();
             console.log('鼠标释放事件触发');
             const flags = this.getMouseEventFlag(event, 'mouseup');
-            const pos = this.getRelativePosition(event);
-            console.log('鼠标释放位置:', pos);
-            this.isMouseDown = false;
-
             remoteControlService.sendCommand({
-                cmd: flags,
-                // x: Math.round(pos.x),
-                // y: Math.round(pos.y),
-                button: event.button
-            });
-            this.mouseButton = null;
-        },
-
-        // 双击事件
-        handleDoubleClick(event) {
-            console.log('双击事件触发');
-            const flags = this.getMouseEventFlag(event, 'dblclick');
-            const pos = this.getRelativePosition(event);
-            console.log('双击位置:', pos);
-
-            remoteControlService.sendCommand({
-                cmd: flags,
+                k: flags,
                 button: event.button
             });
         },
-
-        // 右键菜单事件
-        handleContextMenu(event) {
-            console.log('右键菜单事件触发');
-            console.log('handleContextMenu 方法被调用');
-            // 已经阻止默认行为，只需要发送右键按下事件
-            // 实际右键按下已经在handleMouseDown中处理
-        },
-
         // 鼠标滚轮事件
         handleMouseWheel(event) {
-            console.log('鼠标滚轮事件触发');
+            event.preventDefault();
+            const delta = event.deltaY > 0 ? -120 : 120; // 固定步进，方向修正
             const flags = this.getMouseEventFlag(event, 'wheel');
-            const pos = this.getRelativePosition(event);
-            console.log('鼠标滚轮位置:', pos);
-
-            remoteControlService.sendCommand({
-                cmd: flags,
-                x: pos.x,
-                y: pos.y,
-                dw: event.deltaY
-            });
+            remoteControlService.sendCommand({ k: flags, d: delta });
         },
-
         // 键盘按下事件
         handleKeyDown(event) {
+            event.preventDefault();
+            // to do
             console.log('键盘按下事件触发');
-            //0x0000（即 0）：表示按键按下（KEY_DOWN）。
-
-            //0x0002（即 2）：表示按键释放（KEY_UP）。
-
-            //0x0001（即 1）：扩展键标志（如功能键、小键盘键等，一般不常用）。
             remoteControlService.sendCommand({
-                key: event.key,
-                keyCode: event.keyCode,
-                s: 0,
+                k: event.keyCode,
+
                 f: 0
-            });
-
-            // 阻止默认行为（可选）
-            if ([9, 13, 27, 32].includes(event.keyCode)) { // Tab, Enter, Esc, Space
-                event.preventDefault();
-            }
+            }, 'Keyboard');
         },
-
         // 键盘释放事件
         handleKeyUp(event) {
+            event.preventDefault();
+            // to do
             console.log('键盘释放事件触发');
-            //0x0000（即 0）：表示按键按下（KEY_DOWN）。
-
-            //0x0002（即 2）：表示按键释放（KEY_UP）。
-
-            //0x0001（即 1）：扩展键标志（如功能键、小键盘键等，一般不常用）。
             remoteControlService.sendCommand({
-                key: event.key,
-                keyCode: event.keyCode,
-                s: 0,
+                k: event.keyCode,
                 f: 2
-            });
+            }, 'Keyboard');
+        },
+        
+        // 右键菜单事件
+        handleContextMenu(event) {
+            event.preventDefault();
+            console.log('右键菜单事件触发');
+            // const flags = this.getMouseEventFlag(event, 'mousedown');
+            // remoteControlService.sendCommand({
+            //     k: flags,
+            //     x: this.lastMousePosition.x,
+            //     y: this.lastMousePosition.y
+            // });
         }
     }
 };
@@ -237,7 +200,7 @@ export default {
     margin: 0 auto;
     background-color: #f0f0f0;
     /* 加载时的背景色 */
-    border: 1px solid #ccc;
+    border: 2px solid red;
     display: inline-block;
     line-height: 0;
 }

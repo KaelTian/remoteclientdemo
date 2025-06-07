@@ -10,14 +10,14 @@ class RemoteControlService {
     start() {
         this.retryCount = 0; // 每次启动时重置重试计数器
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl("http://192.168.0.210:8091/signalr?group=192.168.0.210_group",{
+            .withUrl("http://192.168.0.210:8091/signalr?group=192.168.0.210_group", {
                 withCredentials: false, // 禁用身份验证凭据
             })
             .withAutomaticReconnect()
             .build();
 
         // 注册接收远程截图数据的方法
-        this.connection.on("Receive", (data) => {
+        this.connection.on("Screen", (data) => {
             // 1. 传递给所有处理器
             this.deviceDataHandlers.forEach(handler => handler(data));
         });
@@ -61,13 +61,13 @@ class RemoteControlService {
         this.onReconnectFailed = callback;
     }
     // 发送命令的方法
-    sendCommand(command) {
+    sendCommand(command, callbackMethod = 'Mouse') {
         if (!this.connection || this.connection.state !== signalR.HubConnectionState.Connected) {
             console.error('SignalR 连接未建立，无法发送命令。');
             return Promise.reject(new Error('SignalR 连接未建立'));
         }
         console.log('发送命令:', command); // 打印发送的命令，方便调试和分析问题
-        this.connection.invoke('Message', '192.168.0.209_client','Mouse', command)
+        this.connection.invoke('Message', '192.168.0.209_client', callbackMethod, JSON.stringify(command))
             .catch(err => console.error('调用失败:', err));
     }
 }
