@@ -80,11 +80,11 @@ const devices = ref([
 ])
 </script>
 
-<!-- <template>
+<template>
   <div class="app-container">
     <DeviceTable :devices="devices" />
   </div>
-</template> -->
+</template>
 
 <!-- <template>
   <div class="app-container">
@@ -92,11 +92,11 @@ const devices = ref([
   </div>
 </template> -->
 
-<template>
+<!-- <template>
   <div >
     <RemoteControlMonitor/>
   </div>
-</template>
+</template> -->
 
 <style scoped>
 .app-container {

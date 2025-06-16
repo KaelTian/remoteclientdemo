@@ -2,7 +2,7 @@
   <div class="plc-points-monitor">
     <h2>{{ plcConfig.title }}</h2>
     <div v-if="plcConfig.updateFields && plcConfig.updateFields.length > 0">
-      <div class="device-status" >
+      <div class="device-status">
         <div class="status-item">
           <div class="input-group">
             <label class="status-name">更新数据:</label>
@@ -23,18 +23,15 @@
     </div>
     <h2>动态PLC点位测试类</h2>
     <div class="data-list">
-      <div class="data-item" v-for="(value, key) in pointsData" :key="key" :class="{ 'odd-row': $index % 2 === 0 }">
+      <div class="data-item" v-for="(item, index) in pointsData" :key="index" :class="{ 'odd-row': index % 2 === 0 }">
         <div class="field-container">
-          <span class="field-name">{{ key }}:</span>
-          <span class="field-value" v-if="key.includes('Bool')">
-            {{ value ? '1' : '0' }}
+          <span class="field-name">{{ item.displayName || item.plcPointName }}:</span>
+          <span class="field-value">
+            {{ item.plcPointValue }}
           </span>
-          <span class="field-value" v-else-if="key.includes('DateTime') && Array.isArray(value)">
-            {{ value.join(', ') }}
-          </span>
-          <span class="field-value" v-else>
-            {{ value }}
-          </span>
+          <span class="field-attr">类别: {{ item.category }}</span>
+          <span class="field-attr">只读: {{ item.isReadOnly }}</span>
+          <span class="field-attr">点位名: {{ item.plcPointName }}</span>
         </div>
       </div>
     </div>
@@ -64,8 +61,22 @@ export default {
       }
     }
   },
+  methods: {
+    camelCaseKeys(obj) {
+      if (!obj || typeof obj !== 'object') return obj;
+      if (Array.isArray(obj)) return obj.map(camelCaseKeys);
+
+      return Object.keys(obj).reduce((acc, key) => {
+        const camelKey = key.replace(/([-_][a-z])/gi, $1 =>
+          $1.toUpperCase().replace(/[-_]/g, '')
+        );
+        acc[camelKey] = camelCaseKeys(obj[key]);
+        return acc;
+      }, {});
+    }
+  },
   setup(props) {
-    const pointsData = ref({})
+    const pointsData = ref([])
     const updateData = ref({})
     const loading = ref(true)
     const error = ref(null)
@@ -76,8 +87,8 @@ export default {
       updateData.value[field.name] = field.defaultValue || ''
     })
 
-    const handleDataReceived = (newData) => {
-      pointsData.value = { ...pointsData.value, ...newData }
+    const handleDataReceived = (newItems) => {
+      pointsData.value = [...newItems];
       lastUpdateTime.value = new Date().toLocaleString('zh-CN', {
         hour12: false,
         year: 'numeric',
@@ -229,25 +240,50 @@ h2 {
   font-size: 1.5em;
 }
 
-data-list {
-  display: table;
+.data-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   width: 100%;
-  border-collapse: collapse;
 }
 
-data-item {
-  display: table-row;
-}
-
-data-item:nth-child(even) {
+.data-item {
+  display: flex;
+  padding: 12px;
+  border-radius: 4px;
   background-color: #f8f9fa;
 }
 
+.data-item.odd-row {
+  background-color: #ffffff;
+}
+
 .field-container {
-  display: table-cell;
-  padding: 8px 12px;
-  border-bottom: 1px solid #eaeaea;
-  margin-right: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  width: 100%;
+}
+
+.field-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 60%;
+  min-width: 280px;
+}
+
+.field-attrs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 40%;
+  min-width: 240px;
+}
+
+.field-attr {
+  color: #666;
+  font-size: 0.9em;
 }
 
 .field-name {
