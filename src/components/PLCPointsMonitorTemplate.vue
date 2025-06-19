@@ -25,13 +25,18 @@
     <div class="data-list">
       <div class="data-item" v-for="(item, index) in pointsData" :key="index" :class="{ 'odd-row': index % 2 === 0 }">
         <div class="field-container">
-          <span class="field-name">{{ item.displayName || item.plcPointName }}:</span>
-          <span class="field-value">
-            {{ item.plcPointValue }}
-          </span>
-          <span class="field-attr">类别: {{ item.category }}</span>
-          <span class="field-attr">只读: {{ item.isReadOnly }}</span>
-          <span class="field-attr">点位名: {{ item.plcPointName }}</span>
+          <div style="display: flex;">
+            <span class="field-name">{{ item.displayName || item.plcPointName }}:</span>
+            <span class="field-value">
+              {{ item.plcPointValue }}
+            </span>
+          </div>
+          <div class="field-attrs">
+            <span class="field-attr">类别: {{ item.category }}</span>
+            <span class="field-attr">只读: {{ item.isReadOnly }}</span>
+            <span class="field-attr">点位名: {{ item.plcPointName }}</span>
+            <span class="field-attr">时间戳: {{ item.timestamp }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -41,6 +46,7 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import ConfigurableSignalrService from '../services/ConfigurableSignalrService'
+import { callWorkUnit } from '@/services/serverService'
 
 export default {
   name: 'PLCPointsMonitorTemplate',
@@ -61,34 +67,46 @@ export default {
       }
     }
   },
-  methods: {
-    camelCaseKeys(obj) {
-      if (!obj || typeof obj !== 'object') return obj;
-      if (Array.isArray(obj)) return obj.map(camelCaseKeys);
-
-      return Object.keys(obj).reduce((acc, key) => {
-        const camelKey = key.replace(/([-_][a-z])/gi, $1 =>
-          $1.toUpperCase().replace(/[-_]/g, '')
-        );
-        acc[camelKey] = camelCaseKeys(obj[key]);
-        return acc;
-      }, {});
-    }
-  },
   setup(props) {
     const pointsData = ref([])
     const updateData = ref({})
     const loading = ref(true)
     const error = ref(null)
     const lastUpdateTime = ref('')
+    // 增量更新函数
+    function mergePointsData(sourceItems, newItems) {
+      const map = new Map();
 
+      for (const item of sourceItems) {
+        if (item.plcPointName) {
+          map.set(item.plcPointName, item);
+        }
+      }
+
+      for (const newItem of newItems) {
+        const key = newItem.plcPointName;
+        if (!key) continue;
+
+        if (map.has(key)) {
+          Object.assign(map.get(key), newItem);
+        } else {
+          map.set(key, newItem);
+        }
+      }
+
+      // ✨关键是：更新 sourceItems 本体，而不是重赋值
+      // 所以我们直接改 pointsData.value 的数组
+      sourceItems.length = 0;
+      sourceItems.push(...map.values());
+    }
     // 初始化更新数据字段
     props.plcConfig.updateFields.forEach(field => {
       updateData.value[field.name] = field.defaultValue || ''
     })
 
     const handleDataReceived = (newItems) => {
-      pointsData.value = [...newItems];
+      mergePointsData(pointsData.value, newItems);
+      //pointsData.value = [...newItems];
       lastUpdateTime.value = new Date().toLocaleString('zh-CN', {
         hour12: false,
         year: 'numeric',
@@ -125,11 +143,24 @@ export default {
       signalrService.stop()
     })
 
+    const workunit = props.plcConfig.callbackWorkUnit;
     const sendUpdateData = async () => {
-      try {
-        await signalrService.send(JSON.stringify(updateData.value))
-      } catch (err) {
-        error.value = err.message
+      if (workunit && workunit !== '') {
+        // web api 实现
+        try {
+          const result = await callWorkUnit(workunit, updateData.value);
+          console.log('callWorkUnit 调用成功:', result);
+        } catch (err) {
+          console.warn('callWorkUnit 执行任务失败：', err.message);
+        }
+      }
+      else {
+        // signalr 实现
+        try {
+          await signalrService.send(JSON.stringify(updateData.value))
+        } catch (err) {
+          error.value = err.message
+        }
       }
     }
 
@@ -259,7 +290,7 @@ h2 {
 }
 
 .field-container {
-  display: flex;
+  display: block;
   flex-wrap: wrap;
   gap: 8px 16px;
   width: 100%;
@@ -282,6 +313,7 @@ h2 {
 }
 
 .field-attr {
+  display: inline-block;
   color: #666;
   font-size: 0.9em;
 }
