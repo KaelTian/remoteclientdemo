@@ -48,6 +48,12 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import ConfigurableSignalrService from '../services/ConfigurableSignalrService'
 import { callWorkUnit } from '@/services/serverService'
 
+
+const PlcDataRequestType = Object.freeze({
+  Read: 0,
+  Write: 1
+});
+
 export default {
   name: 'PLCPointsMonitorTemplate',
   props: {
@@ -73,6 +79,13 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const lastUpdateTime = ref('')
+    // 定义PLC请求数据结构
+    const plcDataRequest = ref({
+      requestType: PlcDataRequestType.Read,
+      parameters: null
+    });
+    // 作业单元名字
+    const workunit = props.plcConfig.callbackWorkUnit;
     // 增量更新函数
     function mergePointsData(sourceItems, newItems) {
       const map = new Map();
@@ -119,6 +132,27 @@ export default {
       })
     }
 
+    // 发送HTTP请求函数
+    const fetchPlcData = async () => {
+      try {
+        loading.value = true;
+        plcDataRequest.value.requestType = PlcDataRequestType.Read;
+        plcDataRequest.value.parameters = null;
+        const response = await callWorkUnit(workunit, plcDataRequest.value);
+        console.log("PLC全量数据结果:");
+        console.log(response);
+        if (response && response.result !== undefined && response.result === 1) {
+          mergePointsData(pointsData.value, response.data);
+        }
+        else {
+          alert("获取PLC全量数据失败: " + response.message);
+        }
+      } catch (err) {
+        error.value = err.message;
+      } finally {
+        loading.value = false;
+      }
+    }
     const signalrService = new ConfigurableSignalrService({
       url: props.plcConfig.signalrUrl,
       receiveMethod: props.plcConfig.receiveMethod,
@@ -130,10 +164,12 @@ export default {
 
     onMounted(async () => {
       try {
+        await fetchPlcData();
         await signalrService.start()
         signalrService.onDeviceDataReceived(handleDataReceived)
         loading.value = false
       } catch (err) {
+        console.error("onMounted error: " + err);
         error.value = err.message
         loading.value = false
       }
@@ -143,12 +179,14 @@ export default {
       signalrService.stop()
     })
 
-    const workunit = props.plcConfig.callbackWorkUnit;
+
     const sendUpdateData = async () => {
       if (workunit && workunit !== '') {
         // web api 实现
         try {
-          const result = await callWorkUnit(workunit, updateData.value);
+          plcDataRequest.value.requestType = PlcDataRequestType.Write;
+          plcDataRequest.value.parameters = updateData.value;
+          const result = await callWorkUnit(workunit, plcDataRequest.value);
           console.log('callWorkUnit 调用成功:', result);
         } catch (err) {
           console.warn('callWorkUnit 执行任务失败：', err.message);

@@ -8,7 +8,7 @@ import RemoteControlMonitor from './components/RemoteControlMonitor.vue'
 const DeviceType = Object.freeze({
     SIEMENS: 'Siemens',
     OMRON: 'Omron',
-    MELSEC:'Melsec'
+    MELSEC: 'Melsec'
 });
 
 const DeviceStatus = Object.freeze({
@@ -34,7 +34,8 @@ const devices = ref([
                 { name: 'string', label: 'string 点位', type: 'string', defaultValue: '' },
                 // {name: 'word',label:'word 点位',type:'string', defaultValue: ''},
                 // {name: 'word组',label:'word组 点位',type:'string', defaultValue: ''}
-            ]
+            ],
+            callbackWorkUnit: 'SiemensPlcToDBWorkUnit1'
         }
     },
     {
@@ -55,7 +56,8 @@ const devices = ref([
                 // {name: 'word',label:'word 点位',type:'string', defaultValue: ''},
                 // {name: 'word组',label:'word组 点位',type:'string', defaultValue: ''}
                 { name: 'datetime', label: 'datetime 点位', type: 'string', defaultValue: '' }
-            ]
+            ],
+            callbackWorkUnit: 'SiemensPlcToDBWorkUnit2'
         }
     },
     {
@@ -74,7 +76,8 @@ const devices = ref([
                 // { name: 'Name_string', label: 'Name_string 点位', type: 'string', defaultValue: '' },
                 { name: 'Name_word', label: 'Name_word 点位', type: 'string', defaultValue: '' },
                 // { name: 'Name_usint', label: 'Name_usint 点位', type: 'number', defaultValue: 0 }
-            ]
+            ],
+            callbackWorkUnit: 'OmronPlcToDBWorkUnit1'
         }
     },
     {
@@ -92,7 +95,7 @@ const devices = ref([
             updateFields: [
                 { name: 'string', label: 'string 点位', type: 'string', defaultValue: '' }
             ],
-            callbackWorkUnit:'MelsecPlcToDBWorkUnit'
+            callbackWorkUnit: 'MelsecPlcToDBWorkUnit1'
         }
     }
     // 可以继续添加更多设备
