@@ -23,7 +23,7 @@ const devices = ref([
         type: DeviceType.SIEMENS,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: 'PLC_212_DB4000',
+            title: '西门子_PLC_212_DB4000',
             signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=SiemensDevice1PLCGroup',
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
@@ -44,7 +44,7 @@ const devices = ref([
         type: DeviceType.SIEMENS,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: 'PLC_212_DB4002',
+            title: '西门子_PLC_212_DB4002',
             signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=SiemensDevice2PLCGroup',
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
