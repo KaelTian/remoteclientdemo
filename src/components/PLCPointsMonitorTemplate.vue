@@ -26,15 +26,15 @@
       <div class="data-item" v-for="(item, index) in pointsData" :key="index" :class="{ 'odd-row': index % 2 === 0 }">
         <div class="field-container">
           <div style="display: flex;">
-            <span class="field-name">{{ item.displayName || item.plcPointName }}:</span>
+            <span class="field-name">{{ item.plcTag || item.id }}:</span>
             <span class="field-value">
-              {{ item.plcPointValue }}
+              {{ item.value }}
             </span>
           </div>
           <div class="field-attrs">
-            <span class="field-attr">类别: {{ item.category }}</span>
+            <span class="field-attr">Id: {{ item.id }}</span>
             <span class="field-attr">只读: {{ item.isReadOnly }}</span>
-            <span class="field-attr">点位名: {{ item.plcPointName }}</span>
+            <span class="field-attr">点位名: {{ item.plcTag }}</span>
             <span class="field-attr">时间戳: {{ item.timestamp }}</span>
           </div>
         </div>
@@ -86,18 +86,20 @@ export default {
     });
     // 作业单元名字
     const workunit = props.plcConfig.callbackWorkUnit;
+    // 是否增量更新
+    const isIncremental = props.plcConfig.isIncremental;
     // 增量更新函数
     function mergePointsData(sourceItems, newItems) {
       const map = new Map();
 
       for (const item of sourceItems) {
-        if (item.plcPointName) {
-          map.set(item.plcPointName, item);
+        if (item.id) {
+          map.set(item.id, item);
         }
       }
 
       for (const newItem of newItems) {
-        const key = newItem.plcPointName;
+        const key = newItem.id;
         if (!key) continue;
 
         if (map.has(key)) {
@@ -118,8 +120,14 @@ export default {
     })
 
     const handleDataReceived = (newItems) => {
-      mergePointsData(pointsData.value, newItems);
-      //pointsData.value = [...newItems];
+      // 如果是增量更新,merge数据源
+      if (isIncremental) {
+        mergePointsData(pointsData.value, newItems);
+      }
+      // 全量更新,更新全部数据源
+      else {
+        pointsData.value = [...newItems];
+      }
       lastUpdateTime.value = new Date().toLocaleString('zh-CN', {
         hour12: false,
         year: 'numeric',

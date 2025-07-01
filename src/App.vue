@@ -35,7 +35,8 @@ const devices = ref([
                 // {name: 'word',label:'word 点位',type:'string', defaultValue: ''},
                 // {name: 'word组',label:'word组 点位',type:'string', defaultValue: ''}
             ],
-            callbackWorkUnit: 'SiemensPlcToDBWorkUnit1'
+            callbackWorkUnit: 'SiemensPlcToDBWorkUnit1',
+            isIncremental: true
         }
     },
     {
@@ -57,45 +58,125 @@ const devices = ref([
                 // {name: 'word组',label:'word组 点位',type:'string', defaultValue: ''}
                 { name: 'datetime', label: 'datetime 点位', type: 'string', defaultValue: '' }
             ],
-            callbackWorkUnit: 'SiemensPlcToDBWorkUnit2'
+            callbackWorkUnit: 'SiemensPlcToDBWorkUnit2',
+            isIncremental: true
         }
     },
     {
         id: 3,
-        name: '欧姆龙PLC设备1',
+        name: '捷佳系统设置',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: '欧姆龙 PLC 点位测试',
-            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=OmronDevice1PLCGroup',
+            title: '捷佳系统设置',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=JJSystemSettingsCollectorGroup',
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
-            callbackUser: 'OmronDevice1Collector1',
+            callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
                 // { name: 'Name_string', label: 'Name_string 点位', type: 'string', defaultValue: '' },
-                { name: 'Name_word', label: 'Name_word 点位', type: 'string', defaultValue: '' },
+                { name: 'MES_C1_PG11_Pressure', label: 'MES_C1_PG11_Pressure 点位', type: 'string', defaultValue: '' },
                 // { name: 'Name_usint', label: 'Name_usint 点位', type: 'number', defaultValue: 0 }
             ],
-            callbackWorkUnit: 'OmronPlcToDBWorkUnit1'
+            callbackWorkUnit: 'JJSystemSettingsCollectorWorkUnit',
+            isIncremental: true
         }
     },
     {
         id: 4,
-        name: '三菱PLC设备1',
+        name: '捷佳汇总信息',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '捷佳汇总信息',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=JJSummaryCollectorGroup',
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+                //{ name: 'MES_CA1_Coolingwater_Temp', label: 'MES_CA1_Coolingwater_Temp 点位', type: 'number', defaultValue: 0 },
+                { name: 'MES_CA1_Ar_Set', label: 'MES_CA1_Ar_Set 点位', type: 'number', defaultValue: 0 }
+            ],
+            callbackWorkUnit: 'JJSummaryCollectorWorkUnit',
+            isIncremental: true
+        }
+    },
+    {
+        id: 5,
+        name: '捷佳报警信息',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '捷佳报警信息',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=JJAlarmCollectorGroup',
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'JJAlarmsCollectorWorkUnit',
+            isIncremental: false
+        }
+    },
+    {
+        id: 6,
+        name: '捷佳PLC汇总',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '捷佳PLC汇总',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=OmronDeviceJieJiaPLCGroup',
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'OmronDeviceJieJiaCollector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+                { name: 'MES_C1_PG11_Pressure', label: 'MES_C1_PG11_Pressure 点位', type: 'number', defaultValue: 0 },
+                { name: '上位机同意MES写入', label: '上位机同意MES写入 点位', type: 'number', defaultValue: 0 }
+            ],
+            callbackWorkUnit: 'JieJiaWorkUnit1',
+            isIncremental: true
+        }
+    },
+    {
+        id: 7,
+        name: '欣奕华上下料单元',
         type: DeviceType.MELSEC,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: '三菱 PLC 点位测试',
-            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=MelsecDevice1PLCGroup',
+            title: '欣奕华上下料单元',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=XYHLoadingAndUnloadingCollectorGroup',
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
-            callbackUser: 'MelsecDevice1Collector1',
+            callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
-                { name: 'string', label: 'string 点位', type: 'string', defaultValue: '' }
+                { name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
             ],
-            callbackWorkUnit: 'MelsecPlcToDBWorkUnit1'
+            callbackWorkUnit: 'XYHLoadingAndUnloadingWorkUnit',
+            isIncremental: true
+        }
+    },
+    {
+        id: 8,
+        name: '欣奕华主机汇总',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '欣奕华主机汇总',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=XYHSystemCollectorGroup',
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+                //{ name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
+            ],
+            callbackWorkUnit: 'XYHSystemWorkUnit',
+            isIncremental: true
         }
     }
     // 可以继续添加更多设备
