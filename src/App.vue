@@ -97,7 +97,9 @@ const devices = ref([
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
                 //{ name: 'MES_CA1_Coolingwater_Temp', label: 'MES_CA1_Coolingwater_Temp 点位', type: 'number', defaultValue: 0 },
-                { name: 'MES_CA1_Ar_Set', label: 'MES_CA1_Ar_Set 点位', type: 'number', defaultValue: 0 }
+                //{ name: 'MES_CA1_Ar_Set', label: 'MES_CA1_Ar_Set 点位', type: 'number', defaultValue: 0 },
+                { name: 'MES_控制请求_加载配方', label: 'MES_控制请求_加载配方 点位', type: 'number', defaultValue: 0 },
+                { name: 'MES_加载配方', label: 'MES_加载配方 点位', type: 'number', defaultValue: 0 }
             ],
             callbackWorkUnit: 'JJSummaryCollectorWorkUnit',
             isIncremental: true
@@ -123,26 +125,44 @@ const devices = ref([
     },
     {
         id: 6,
-        name: '捷佳PLC汇总',
+        name: '捷佳门阀类汇总',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: '捷佳PLC汇总',
-            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=OmronDeviceJieJiaPLCGroup',
+            title: '捷佳门阀类汇总',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=JJEQIOCollectorGroup',
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
-            callbackUser: 'OmronDeviceJieJiaCollector1',
+            callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
-                { name: 'MES_C1_PG11_Pressure', label: 'MES_C1_PG11_Pressure 点位', type: 'number', defaultValue: 0 },
-                { name: '上位机同意MES写入', label: '上位机同意MES写入 点位', type: 'number', defaultValue: 0 }
+                //{ name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
             ],
-            callbackWorkUnit: 'JieJiaWorkUnit1',
+            callbackWorkUnit: 'JJEQIOCollectorWorkUnit',
             isIncremental: true
         }
     },
     {
         id: 7,
+        name: '欣奕华主机汇总',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '欣奕华主机汇总',
+            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=XYHSystemCollectorGroup',
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+                //{ name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
+            ],
+            callbackWorkUnit: 'XYHSystemCollectorWorkUnit',
+            isIncremental: true
+        }
+    },
+    {
+        id: 8,
         name: '欣奕华上下料单元',
         type: DeviceType.MELSEC,
         status: DeviceStatus.ONLINE,
@@ -157,25 +177,6 @@ const devices = ref([
                 { name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
             ],
             callbackWorkUnit: 'XYHLoadingAndUnloadingWorkUnit',
-            isIncremental: true
-        }
-    },
-    {
-        id: 8,
-        name: '欣奕华主机汇总',
-        type: DeviceType.OMRON,
-        status: DeviceStatus.ONLINE,
-        plcConfig: {
-            title: '欣奕华主机汇总',
-            signalrUrl: 'http://localhost:8091/signalr?user=Receiver1&group=XYHSystemCollectorGroup',
-            receiveMethod: 'ReceivePLCPointsEvent',
-            sendMethod: 'Message',
-            callbackUser: 'Collector1',
-            callbackMethod: 'UpdatePLCPointsEvent',
-            updateFields: [
-                //{ name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
-            ],
-            callbackWorkUnit: 'XYHSystemWorkUnit',
             isIncremental: true
         }
     }
