@@ -21,51 +21,6 @@ const DeviceStatus = Object.freeze({
 const devices = ref([
     {
         id: 1,
-        name: 'PLC_212_DB4000',
-        type: DeviceType.SIEMENS,
-        status: DeviceStatus.ONLINE,
-        plcConfig: {
-            title: '西门子_PLC_212_DB4000',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=SiemensDevice1PLCGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
-            sendMethod: 'Message',
-            callbackUser: 'SiemensDevice1Collector1',
-            callbackMethod: 'UpdatePLCPointsEvent',
-            updateFields: [
-                // {name: 'bit_1',label:'bit_1 点位',type:'number', defaultValue: 0},
-                { name: 'string', label: 'string 点位', type: 'string', defaultValue: '' },
-                // {name: 'word',label:'word 点位',type:'string', defaultValue: ''},
-                // {name: 'word组',label:'word组 点位',type:'string', defaultValue: ''}
-            ],
-            callbackWorkUnit: 'SiemensPlcToDBWorkUnit1',
-            isIncremental: true
-        }
-    },
-    {
-        id: 2,
-        name: 'PLC_212_DB4002',
-        type: DeviceType.SIEMENS,
-        status: DeviceStatus.ONLINE,
-        plcConfig: {
-            title: '西门子_PLC_212_DB4002',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=SiemensDevice2PLCGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
-            sendMethod: 'Message',
-            callbackUser: 'SiemensDevice2Collector1',
-            callbackMethod: 'UpdatePLCPointsEvent',
-            updateFields: [
-                // {name: 'bit_1',label:'bit_1 点位',type:'number', defaultValue: 0},
-                { name: 'string', label: 'string 点位', type: 'string', defaultValue: '' },
-                // {name: 'word',label:'word 点位',type:'string', defaultValue: ''},
-                // {name: 'word组',label:'word组 点位',type:'string', defaultValue: ''}
-                { name: 'datetime', label: 'datetime 点位', type: 'string', defaultValue: '' }
-            ],
-            callbackWorkUnit: 'SiemensPlcToDBWorkUnit2',
-            isIncremental: true
-        }
-    },
-    {
-        id: 3,
         name: '捷佳系统设置',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
@@ -77,38 +32,33 @@ const devices = ref([
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
-                // { name: 'Name_string', label: 'Name_string 点位', type: 'string', defaultValue: '' },
-                //{ name: 'MES_C1_PG11_Pressure', label: 'MES_C1_PG11_Pressure 点位', type: 'string', defaultValue: '' },
-                // { name: 'Name_usint', label: 'Name_usint 点位', type: 'number', defaultValue: 0 }
             ],
             callbackWorkUnit: 'JJSystemSettingsCollectorWorkUnit',
             isIncremental: true
         }
     },
     {
-        id: 4,
-        name: '捷佳汇总信息',
+        id: 2,
+        name: '捷佳主机信息',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: '捷佳汇总信息',
+            title: '捷佳主机信息',
             signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJSummaryCollectorGroup`,
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
-                //{ name: 'MES_CA1_Coolingwater_Temp', label: 'MES_CA1_Coolingwater_Temp 点位', type: 'number', defaultValue: 0 },
-                //{ name: 'MES_CA1_Ar_Set', label: 'MES_CA1_Ar_Set 点位', type: 'number', defaultValue: 0 },
-                { name: 'MES_CA2_O2_Set', label: 'MES_CA2_O2_Set 点位', type: 'number', defaultValue: 0 },
-                { name: 'MES_控制请求_CA2流量O2', label: 'MES_控制请求_CA2流量O2 点位', type: 'number', defaultValue: 0 }
+                // { name: 'MES_CA2_O2_Set', label: 'MES_CA2_O2_Set 点位', type: 'number', defaultValue: 0 },
+                // { name: 'MES_控制请求_CA2流量O2', label: 'MES_控制请求_CA2流量O2 点位', type: 'number', defaultValue: 0 }
             ],
             callbackWorkUnit: 'JJSummaryCollectorWorkUnit',
             isIncremental: true
         }
     },
     {
-        id: 5,
+        id: 3,
         name: '捷佳报警信息',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
@@ -126,12 +76,12 @@ const devices = ref([
         }
     },
     {
-        id: 6,
-        name: '捷佳门阀类汇总',
+        id: 4,
+        name: '捷佳门阀信息',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: '捷佳门阀类汇总',
+            title: '捷佳门阀信息',
             signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJEQIOCollectorGroup`,
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
@@ -145,50 +95,12 @@ const devices = ref([
         }
     },
     {
-        id: 7,
-        name: '欣奕华主机汇总',
+        id: 5,
+        name: '捷佳主机和门阀信息',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
         plcConfig: {
-            title: '欣奕华主机汇总',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHSystemCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
-            sendMethod: 'Message',
-            callbackUser: 'Collector1',
-            callbackMethod: 'UpdatePLCPointsEvent',
-            updateFields: [
-                //{ name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
-            ],
-            callbackWorkUnit: 'XYHCollectorWorkUnit',
-            isIncremental: true
-        }
-    },
-    {
-        id: 8,
-        name: '欣奕华上下料单元',
-        type: DeviceType.MELSEC,
-        status: DeviceStatus.ONLINE,
-        plcConfig: {
-            title: '欣奕华上下料单元',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHLoadingAndUnloadingCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
-            sendMethod: 'Message',
-            callbackUser: 'Collector1',
-            callbackMethod: 'UpdatePLCPointsEvent',
-            updateFields: [
-                { name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
-            ],
-            callbackWorkUnit: 'XYHLoadingAndUnloadingCollectorWorkUnit',
-            isIncremental: true
-        }
-    },
-    {
-        id: 9,
-        name: '捷佳主机和门阀类汇总',
-        type: DeviceType.OMRON,
-        status: DeviceStatus.ONLINE,
-        plcConfig: {
-            title: '捷佳主机和门阀类汇总',
+            title: '捷佳主机和门阀信息',
             signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJSummaryAndEQIOCollectorGroup`,
             receiveMethod: 'ReceivePLCPointsEvent',
             sendMethod: 'Message',
@@ -202,7 +114,26 @@ const devices = ref([
         }
     },
     {
-        id: 10,
+        id: 6,
+        name: '欣奕华主机信息',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '欣奕华主机信息',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHSystemCollectorGroup`,
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+                //{ name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
+            ],
+            callbackWorkUnit: 'XYHCollectorWorkUnit',
+            isIncremental: true
+        }
+    },
+    {
+        id: 7,
         name: '欣奕华报警信息',
         type: DeviceType.OMRON,
         status: DeviceStatus.ONLINE,
@@ -217,6 +148,25 @@ const devices = ref([
             ],
             callbackWorkUnit: 'XYHAlarmsCollectorWorkUnit',
             isIncremental: false
+        }
+    },
+    {
+        id: 8,
+        name: '欣奕华上下料信息',
+        type: DeviceType.MELSEC,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '欣奕华上下料信息',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHLoadingAndUnloadingCollectorGroup`,
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+                { name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
+            ],
+            callbackWorkUnit: 'XYHLoadingAndUnloadingCollectorWorkUnit',
+            isIncremental: true
         }
     }
     // 可以继续添加更多设备
