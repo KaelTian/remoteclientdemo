@@ -6,6 +6,7 @@
             <input type="text" id="serverUrl" v-model="serverUrl" class="form-control">
         </div>
         <button @click="saveSettings" class="btn-save">保存设置</button>
+
         <div v-if="message" class="message">{{ message }}</div>
     </div>
 </template>
@@ -21,16 +22,20 @@ onMounted(() => {
     serverUrl.value = getServerUrl();
 });
 
-const saveSettings = () => {
-    if (serverUrl.value) {
-        saveServerUrl(serverUrl.value);
-        message.value = '设置已保存，将使用新的服务地址';
+const saveSettings = async () => {
+    if (!serverUrl.value) return;
 
-        // 3秒后清除提示消息
-        setTimeout(() => {
-            message.value = '';
-        }, 3000);
+    try {
+        await saveServerUrl(serverUrl.value);
+        message.value = '设置已保存，将使用新的服务地址';
+    } catch (err) {
+        console.error(err);
+        message.value = '保存失败，请重试';
     }
+
+    setTimeout(() => {
+        message.value = '';
+    }, 3000);
 };
 </script>
 

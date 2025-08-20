@@ -43,8 +43,34 @@ export const getServerUrl = () => {
 };
 
 // 保存后端服务URL到localStorage
-export const saveServerUrl = (url) => {
-    config.serverUrl = url;
-    localStorage.setItem('serverUrl', url);
-    console.log('保存用户配置成功, serverUrl:', url);
+export const saveServerUrl = async (url) => {
+    if (!url) {
+        console.error('URL不能为空');
+        return;
+    }
+    try {
+        // 1. 保存到本地localStorage
+        config.serverUrl = url;
+        localStorage.setItem('serverUrl', url);
+        console.log('保存用户配置成功, serverUrl:', url);
+
+        // // 有持久化需求，才调用后端接口 通过后端Node Express server 持久化配置
+
+        // // 2. 调用后端接口（注意端口要和后端启动的端口一致）
+        // const response = await fetch('http://localhost:8092/api/update-config', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ serverUrl: url }),
+        // });
+
+        // if (response.ok) {
+        //     console.log('服务器配置文件已更新');
+        // } else {
+        //     console.warn('服务器配置文件更新失败');
+        // }
+    } catch (error) {
+        console.error('保存配置时出错:', error);
+    }
 };
