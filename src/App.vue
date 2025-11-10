@@ -4,6 +4,7 @@
         <nav class="app-nav">
             <router-link to="/" class="nav-link">设备列表</router-link>
             <router-link to="/settings" class="nav-link">服务设置</router-link>
+            <!--<router-link to="/signalrtest" class="nav-link">SignalR测试</router-link> -->
         </nav>
 
         <!-- 路由出口：根据当前路由显示对应的组件 -->

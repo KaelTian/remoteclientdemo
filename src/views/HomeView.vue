@@ -163,9 +163,26 @@ const devices = ref([
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
-                { name: 'D222', label: 'D222 点位', type: 'string', defaultValue: 0 },
             ],
             callbackWorkUnit: 'XYHLoadingAndUnloadingCollectorWorkUnit',
+            isIncremental: true
+        }
+    },
+    {
+        id: 9,
+        name: '欣奕华上下料报警',
+        type: DeviceType.MELSEC,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '欣奕华上下料报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHLoadingAndUnloadingAlarmsCollectorGroup`,
+            receiveMethod: 'ReceivePLCPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'XYHLoadingAndUnloadingAlarmsCollectorWorkUnit',
             isIncremental: true
         }
     }
