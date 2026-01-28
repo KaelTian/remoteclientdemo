@@ -2,7 +2,8 @@
     <div class="app-container">
         <!-- 导航栏 -->
         <nav class="app-nav">
-            <router-link to="/" class="nav-link">设备列表</router-link>
+            <router-link to="/" class="nav-link">点位集合设备列表</router-link>
+            <router-link to="/objectview" class="nav-link">对象设备列表</router-link>
             <router-link to="/settings" class="nav-link">服务设置</router-link>
             <!--<router-link to="/signalrtest" class="nav-link">SignalR测试</router-link> -->
         </nav>

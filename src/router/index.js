@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Settings from '../views/Settings.vue' // 导入Settings组件
 import SignalRTest from '../views/SignalRTest.vue'
+import ObjectView from '../views/ObjectView.vue'
 
 import { initConfig } from '../utils/configService'
 
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/signalrtest',
       name: 'signalrtest',
       component: SignalRTest // SignalR测试页面
+    },
+    {
+      path: '/objectview',
+      name: 'objectview',
+      component: ObjectView // SignalR测试页面
     }
   ]
 })

@@ -10,7 +10,8 @@ import { getServerUrl } from '../utils/configService'
 const DeviceType = Object.freeze({
     SIEMENS: 'Siemens',
     OMRON: 'Omron',
-    MELSEC: 'Melsec'
+    MELSEC: 'Melsec',
+    RESTAPI: 'RestApi'
 });
 
 const DeviceStatus = Object.freeze({
@@ -26,8 +27,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '捷佳系统设置',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJSystemSettingsCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJHostCollectorGroup`,
+            receiveMethod: 'GetJJSystemSettingPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -44,8 +45,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '捷佳主机信息',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJSummaryCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJHostCollectorGroup`,
+            receiveMethod: 'GetJJHostPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -64,8 +65,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '捷佳报警信息',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJAlarmCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJHostCollectorGroup`,
+            receiveMethod: 'GetJJAlarmPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -82,8 +83,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '捷佳门阀信息',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJEQIOCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJHostCollectorGroup`,
+            receiveMethod: 'GetJJEQIOPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -101,8 +102,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '捷佳主机和门阀信息',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJSummaryAndEQIOCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JJHostCollectorGroup`,
+            receiveMethod: 'GetJJHostAndEQIOPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -120,8 +121,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '欣奕华主机信息',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHSystemCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHHostCollectorGroup`,
+            receiveMethod: 'GetXYHHostPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -139,8 +140,8 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '欣奕华报警信息',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHAlarmCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHHostCollectorGroup`,
+            receiveMethod: 'GetXYHAlarmPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -158,7 +159,7 @@ const devices = ref([
         plcConfig: {
             title: '欣奕华上下料信息',
             signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHLoadingAndUnloadingCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            receiveMethod: 'GetXYHLoadingAndUnloadingHostPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
@@ -175,15 +176,87 @@ const devices = ref([
         status: DeviceStatus.ONLINE,
         plcConfig: {
             title: '欣奕华上下料报警',
-            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHLoadingAndUnloadingAlarmsCollectorGroup`,
-            receiveMethod: 'ReceivePLCPointsEvent',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=XYHLoadingAndUnloadingCollectorGroup`,
+            receiveMethod: 'GetXYHLoadingAndUnloadingAlarmPointsEvent',
             sendMethod: 'Message',
             callbackUser: 'Collector1',
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
             ],
             callbackWorkUnit: 'XYHLoadingAndUnloadingAlarmsCollectorWorkUnit',
-            isIncremental: true
+            isIncremental: false
+        }
+    },
+    {
+        id: 10,
+        name: '激光P1报警',
+        type: DeviceType.RESTAPI,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '激光P1报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JGP1HostGroup`,
+            receiveMethod: 'GetP1AlarmData',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'JiGuangP1WorkUnit',
+            isIncremental: false
+        }
+    },
+    {
+        id: 11,
+        name: '激光P2报警',
+        type: DeviceType.RESTAPI,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '激光P2报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JGP2HostGroup`,
+            receiveMethod: 'GetP2AlarmData',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'JiGuangP2WorkUnit',
+            isIncremental: false
+        }
+    },
+    {
+        id: 12,
+        name: '激光P3报警',
+        type: DeviceType.RESTAPI,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '激光P3报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JGP3HostGroup`,
+            receiveMethod: 'GetP3AlarmData',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'JiGuangP3WorkUnit',
+            isIncremental: false
+        }
+    },
+    {
+        id: 13,
+        name: '激光P4报警',
+        type: DeviceType.RESTAPI,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '激光P4报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=JGP4HostGroup`,
+            receiveMethod: 'GetP4AlarmData',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'JiGuangP3WorkUnit',
+            isIncremental: false
         }
     }
     // 可以继续添加更多设备

@@ -185,6 +185,7 @@ export default {
 
     onBeforeUnmount(() => {
       signalrService.stop()
+      console.log(props.plcConfig.title + " 已断开连接"); 
     })
 
 

@@ -63,14 +63,55 @@ class ConfigurableSignalrService {
         return this.startedPromise;
     }
 
+    // registerAllHandlers() {
+    //     // 为每个配置的方法注册监听器
+    //     Object.keys(this.handlersMap).forEach(methodName => {
+    //         this.connection.on(methodName, (data) => {
+    //             const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    //             this.handlersMap[methodName].forEach(handler => handler(parsedData));
+    //         });
+    //     });
+    // }
+
     registerAllHandlers() {
         // 为每个配置的方法注册监听器
         Object.keys(this.handlersMap).forEach(methodName => {
             this.connection.on(methodName, (data) => {
-                const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-                this.handlersMap[methodName].forEach(handler => handler(parsedData));
+                try {
+                    //console.log(`[SignalR] 收到消息: ${methodName}, 类型: ${typeof data}`);
+
+                    // // 如果是字符串，检查是否有特殊字符
+                    // if (typeof data === 'string') {
+                    //     //console.log(`[SignalR] 数据长度: ${data.length}`);
+
+                    //     //console.log(`原始数据: ${data}`);
+
+                    //     // 简单清理 \r 字符
+                    //     const cleanedData = data.replace(/\r/g, '');
+                    //     if (data !== cleanedData) {
+                    //         console.warn(`[SignalR] 清理了 \\r 字符`);
+                    //         data = cleanedData;
+                    //     }
+                    // }
+
+                    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+                    //console.log(`[SignalR] 解析后数据: ${parsedData}`);
+                    //console.log(`[SignalR] 解析成功，处理器数量: ${this.handlersMap[methodName].length}`);
+
+                    this.handlersMap[methodName].forEach(handler => handler(parsedData));
+
+                } catch (error) {
+                    console.error(`[SignalR] 处理失败: ${methodName}`, error);
+                    if (typeof data === 'string') {
+                        console.error(`[SignalR] 原始数据(前100字符): ${data.substring(0, 100)}`);
+                    }
+                }
             });
+
+            console.log(`[SignalR] 已注册: ${methodName}`);
         });
+
+        console.log(`[SignalR] 注册完成，共 ${Object.keys(this.handlersMap).length} 个方法`);
     }
 
     // 监听特定方法的数据接收
