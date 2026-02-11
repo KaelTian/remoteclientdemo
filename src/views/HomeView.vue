@@ -184,7 +184,8 @@ const devices = ref([
             updateFields: [
             ],
             callbackWorkUnit: 'XYHLoadingAndUnloadingAlarmsCollectorWorkUnit',
-            isIncremental: false
+            isIncremental: false,
+            useCallbackWorkUnit: false
         }
     },
     {
@@ -202,7 +203,8 @@ const devices = ref([
             updateFields: [
             ],
             callbackWorkUnit: 'JiGuangP1WorkUnit',
-            isIncremental: false
+            isIncremental: false,
+            useCallbackWorkUnit: false
         }
     },
     {
@@ -220,7 +222,8 @@ const devices = ref([
             updateFields: [
             ],
             callbackWorkUnit: 'JiGuangP2WorkUnit',
-            isIncremental: false
+            isIncremental: false,
+            useCallbackWorkUnit: false
         }
     },
     {
@@ -238,7 +241,8 @@ const devices = ref([
             updateFields: [
             ],
             callbackWorkUnit: 'JiGuangP3WorkUnit',
-            isIncremental: false
+            isIncremental: false,
+            useCallbackWorkUnit: false
         }
     },
     {
@@ -256,7 +260,28 @@ const devices = ref([
             updateFields: [
             ],
             callbackWorkUnit: 'JiGuangP3WorkUnit',
-            isIncremental: false
+            isIncremental: false,
+            useCallbackWorkUnit: false
+        }
+    },
+    {
+        id: 14,
+        name: '层压机主机',
+        type: DeviceType.SIEMENS,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '层压机主机',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=CengYaJiHostGroup`,
+            receiveMethod: 'GetCYJPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            callbackWorkUnit: 'JiGuangP3WorkUnit',
+            isIncremental: false,
+            useCallbackWorkUnit: false,
+            plcPointsUrl: `/CYJCollectorWorkUnit/PLCPoints`,
         }
     }
     // 可以继续添加更多设备

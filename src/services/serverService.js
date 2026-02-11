@@ -39,3 +39,17 @@ export async function callWorkUnit(workunit, argsObj) {
         throw error;
     }
 }
+
+export async function getPLCPoints(plcPointsUrl) {
+    try {
+        console.log('当前使用的 plc points url: ' + plcPointsUrl);
+        const response = await apiClient.get(
+            plcPointsUrl, // 注意路径要与后端路由匹配
+            {}
+        );
+        return response.data;
+    } catch (error) {
+        console.error(`[PlcPointsUrl: ${plcPointsUrl}] 获取PLC点失败:`, error);
+        throw error;
+    }
+}

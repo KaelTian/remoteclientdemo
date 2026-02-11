@@ -46,7 +46,7 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import ConfigurableSignalrService from '../services/ConfigurableSignalrService'
-import { callWorkUnit } from '@/services/serverService'
+import { callWorkUnit, getPLCPoints } from '@/services/serverService'
 
 
 const PlcDataRequestType = Object.freeze({
@@ -65,10 +65,10 @@ export default {
           'title',
           'signalrUrl',
           'receiveMethod',
-          'sendMethod',
-          'callbackUser',
-          'callbackMethod',
-          'updateFields'
+          // 'sendMethod',
+          // 'callbackUser',
+          // 'callbackMethod',
+          // 'updateFields'
         ].every(key => key in config)
       }
     }
@@ -79,15 +79,14 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const lastUpdateTime = ref('')
-    // 定义PLC请求数据结构
-    const plcDataRequest = ref({
-      requestType: PlcDataRequestType.Read,
-      parameters: null
-    });
-    // 作业单元名字
-    const workunit = props.plcConfig.callbackWorkUnit;
-    // 是否增量更新
-    const isIncremental = props.plcConfig.isIncremental;
+    // 解构并设置默认值
+    const {
+      callbackWorkUnit,           // 必须属性，不设置默认值
+      isIncremental,              // 必须属性，不设置默认值
+      useCallbackWorkUnit = true, // 可选，默认 true
+      plcPointsUrl = ''           // 可选，默认空字符串
+    } = props.plcConfig || {};
+
     // 增量更新函数
     function mergePointsData(sourceItems, newItems) {
       const map = new Map();
@@ -144,9 +143,15 @@ export default {
     const fetchPlcData = async () => {
       try {
         loading.value = true;
-        plcDataRequest.value.requestType = PlcDataRequestType.Read;
-        plcDataRequest.value.parameters = null;
-        const response = await callWorkUnit(workunit, plcDataRequest.value);
+        let response = {}
+        if (useCallbackWorkUnit) {
+          response = await callWorkUnit(callbackWorkUnit, {
+            requestType: PlcDataRequestType.Read
+          });
+        }
+        else if (!useCallbackWorkUnit && plcPointsUrl !== '') {
+          response = await getPLCPoints(plcPointsUrl);
+        }
         console.log("PLC全量数据结果:");
         console.log(response);
         if (response && response.result !== undefined && response.result === 1) {
@@ -170,6 +175,8 @@ export default {
       withCredentials: false
     })
 
+
+
     onMounted(async () => {
       try {
         await fetchPlcData();
@@ -185,17 +192,18 @@ export default {
 
     onBeforeUnmount(() => {
       signalrService.stop()
-      console.log(props.plcConfig.title + " 已断开连接"); 
+      console.log(props.plcConfig.title + " 已断开连接");
     })
 
 
     const sendUpdateData = async () => {
-      if (workunit && workunit !== '') {
+      if (callbackWorkUnit && callbackWorkUnit !== '') {
         // web api 实现
         try {
-          plcDataRequest.value.requestType = PlcDataRequestType.Write;
-          plcDataRequest.value.parameters = updateData.value;
-          const result = await callWorkUnit(workunit, plcDataRequest.value);
+          const result = await callWorkUnit(callbackWorkUnit, {
+            requestType: PlcDataRequestType.Write,
+            parameters: updateData.value
+          });
           console.log('callWorkUnit 调用成功:', result);
         } catch (err) {
           console.warn('callWorkUnit 执行任务失败：', err.message);
