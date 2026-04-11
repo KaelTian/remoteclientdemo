@@ -278,12 +278,87 @@ const devices = ref([
             callbackMethod: 'UpdatePLCPointsEvent',
             updateFields: [
             ],
-            callbackWorkUnit: 'JiGuangP3WorkUnit',
-            isIncremental: false,
+            isIncremental: true,
             useCallbackWorkUnit: false,
             plcPointsUrl: `/CYJCollectorWorkUnit/PLCPoints`,
         }
-    }
+    },
+    {
+        id: 15,
+        name: '层压机报警',
+        type: DeviceType.SIEMENS,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '层压机报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=CengYaJiHostGroup`,
+            receiveMethod: 'GetCYJAlarmsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            isIncremental: false,
+            useCallbackWorkUnit: false,
+            plcPointsUrl: `/CYJCollectorWorkUnit/Alarms`,
+        }
+    },
+    {
+        id: 16,
+        name: '涂布600主机',
+        type: DeviceType.SIEMENS,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '涂布600主机',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=TuBu600HostGroup`,
+            receiveMethod: 'GetTB600PointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            isIncremental: true,
+            useCallbackWorkUnit: false,
+            plcPointsUrl: `/TB600BasicCollectorWorkUnit/PLCPoints`,
+        }
+    },
+    {
+        id: 17,
+        name: '涂布600报警',
+        type: DeviceType.SIEMENS,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: '涂布600报警',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=TuBu600HostGroup`,
+            receiveMethod: 'GetTB600AlarmsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            isIncremental: false,
+            useCallbackWorkUnit: false,
+            plcPointsUrl: `/TB600AlarmCollectorWorkUnit/Alarms`,
+        }
+    },
+    {
+        id: 18,
+        name: 'ALD主机',
+        type: DeviceType.OMRON,
+        status: DeviceStatus.ONLINE,
+        plcConfig: {
+            title: 'ALD主机',
+            signalrUrl: `${getServerUrl()}/signalr?user=Receiver1&group=ALDHostGroup`,
+            receiveMethod: 'GetALDPointsEvent',
+            sendMethod: 'Message',
+            callbackUser: 'Collector1',
+            callbackMethod: 'UpdatePLCPointsEvent',
+            updateFields: [
+            ],
+            isIncremental: true,
+            useCallbackWorkUnit: false,
+            plcPointsUrl: `/ALDBasicCollectorWorkUnit/PLCPoints`,
+        }
+    },
     // 可以继续添加更多设备
 ])
 </script>
